@@ -28,6 +28,12 @@ def purge_old_paths(abs_url):
                  logger.warn('No varnish instance running. Could not purge %s' % str(p.old_path))
 
 def absolute_url_purge_handler(sender, **kwargs):
+    """
+    Purges the absolute url of the model instance
+    NB: It adds $ to the end of the purge, so no urls with parameters etc are purged, 
+    only the url given by get_absolute_url itself
+    """
+    
     abs_url = kwargs['instance'].get_absolute_url()
     
     try:
@@ -64,7 +70,7 @@ def api_resource_purge_handler (sender, **kwargs):
         resource_url = instance.get_resource_url()
         
         try:
-            manager.run('purge.url', r'^%s$' % resource_url)
+            manager.run('purge.url', r'^%s' % resource_url)
         except:
             logger.warn('No varnish instance running. Could not purge %s ' % resource_url)
     
