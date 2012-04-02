@@ -63,6 +63,8 @@ def api_resource_purge_handler (sender, **kwargs):
                                                 'api_name': 'v1',
                                                 'pk': self.id}) 
     
+    The method will purge all urls *starting* with the url  
+    
     """
     instance = kwargs['instance']
     
