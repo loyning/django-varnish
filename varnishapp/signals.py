@@ -39,3 +39,37 @@ def absolute_url_purge_handler(sender, **kwargs):
 
 for model in getattr(settings, 'VARNISH_WATCHED_MODELS', ()):
     post_save.connect(absolute_url_purge_handler, sender=get_model(*model.split('.')))
+    
+    
+    
+
+def api_resource_purge_handler (sender, **kwargs):
+    
+    """
+    Purges object urls in the API. Requires a get_resource_url on the model that
+    returns the url of the api resource object base url. If using tastypie that would 
+    look like something like this on a resource named person:
+    
+    @models.permalink
+    def get_resource_url(self):
+           return ('api_dispatch_detail', (), {
+                                               'resource_name': 'person', 
+                                                'api_name': 'v1',
+                                                'pk': self.id}) 
+    
+    """
+    instance = kwargs['instance']
+    
+    if hasattr(instance, 'get_resource_url'):
+        resource_url = instance.get_resource_url()
+        
+        try:
+            manager.run('purge.url', r'^%s$' % resource_url)
+        except:
+            logger.warn('No varnish instance running. Could not purge %s ' % resource_url)
+    
+        purge_old_paths(resource_url)
+    
+    
+for model in getattr(settings, 'VARNISH_WATCHED_MODELS', ()):
+    post_save.connect(api_resource_purge_handler, sender=get_model(*model.split('.')))
