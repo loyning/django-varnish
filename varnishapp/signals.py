@@ -33,8 +33,10 @@ def absolute_url_purge_handler(sender, **kwargs):
     NB: It adds $ to the end of the purge, so no urls with parameters etc are purged, 
     only the url given by get_absolute_url itself
     """
+    instance = kwargs['instance']
+    
     if hasattr(instance, 'get_absolute_url'):
-        abs_url = kwargs['instance'].get_absolute_url()
+        abs_url = instance.get_absolute_url()
         
         try:
             manager.run('purge.url', r'^%s$' % abs_url)
