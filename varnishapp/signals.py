@@ -33,15 +33,15 @@ def absolute_url_purge_handler(sender, **kwargs):
     NB: It adds $ to the end of the purge, so no urls with parameters etc are purged, 
     only the url given by get_absolute_url itself
     """
-    
-    abs_url = kwargs['instance'].get_absolute_url()
-    
-    try:
-        manager.run('purge.url', r'^%s$' % abs_url)
-    except:
-        logger.warn('No varnish instance running. Could not purge %s ' % abs_url)
-    
-    purge_old_paths(abs_url)
+    if hasattr(instance, 'get_absolute_url'):
+        abs_url = kwargs['instance'].get_absolute_url()
+        
+        try:
+            manager.run('purge.url', r'^%s$' % abs_url)
+        except:
+            logger.warn('No varnish instance running. Could not purge %s ' % abs_url)
+        
+        purge_old_paths(abs_url)
 
 for model in getattr(settings, 'VARNISH_WATCHED_MODELS', ()):
     post_save.connect(absolute_url_purge_handler, sender=get_model(*model.split('.')))
