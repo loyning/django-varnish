@@ -74,7 +74,7 @@ def api_resource_purge_handler (sender, **kwargs):
         resource_url = instance.get_resource_url()
         
         try:
-            manager.run('purge.url', r'^%s' % resource_url)
+            manager.run('ban.url', r'^%s' % resource_url)
         except:
             logger.warn('No varnish instance running. Could not purge %s ' % resource_url)
     
