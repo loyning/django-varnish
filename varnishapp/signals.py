@@ -23,7 +23,7 @@ def purge_old_paths(abs_url):
         for p in oldpaths:
              
              try:
-                 manager.run('purge.url', r'^%s$' % str(p.old_path))
+                 manager.run('ban.url', r'^%s$' % str(p.old_path))
              except:
                  logger.warn('No varnish instance running. Could not purge %s' % str(p.old_path))
 
@@ -39,7 +39,7 @@ def absolute_url_purge_handler(sender, **kwargs):
         abs_url = instance.get_absolute_url()
         
         try:
-            manager.run('purge.url', r'^%s$' % abs_url)
+            manager.run('ban.url', r'^%s$' % abs_url)
         except:
             logger.warn('No varnish instance running. Could not purge %s ' % abs_url)
         
