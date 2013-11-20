@@ -7,6 +7,7 @@ import logging
 
 logger = logging.getLogger("varnish.invalidation")
 
+
 def purge_old_paths(abs_url):
     
     """
@@ -23,7 +24,7 @@ def purge_old_paths(abs_url):
         for p in oldpaths:
              
              try:
-                 manager.run('ban.url', r'^%s$' % str(p.old_path))
+                 resp = manager.run('ban.url', r'^%s$' % str(p.old_path))
              except:
                  logger.warn('No varnish instance running. Could not purge %s' % str(p.old_path))
 
@@ -39,7 +40,10 @@ def absolute_url_purge_handler(sender, **kwargs):
         abs_url = instance.get_absolute_url()
         
         try:
-            manager.run('ban.url', r'^%s$' % abs_url)
+            banurl = r'^%s$' % abs_url
+            logger.info("Banning %s" % banurl)
+            resp = manager.run('ban.url', banurl)
+            logger.info(resp)
         except:
             logger.warn('No varnish instance running. Could not purge %s ' % abs_url)
         
