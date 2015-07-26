@@ -74,9 +74,14 @@ def api_resource_purge_handler (sender, **kwargs):
     """
     instance = kwargs['instance']
 
+    resource_urls = []
     if hasattr(instance, 'get_resource_url'):
-        resource_url = instance.get_resource_url()
+        resource_urls.extend(instance.get_resource_url())
 
+    if hasattr(instance, 'get_related_resource_urls'):
+        resource_urls.extend(instance.get_related_resource_urls())
+
+    for resource_url in resource_urls:
         try:
             logger.info('Banning API %s' % resource_url)
             resp = manager.run('ban.url', r'^%s' % resource_url)
