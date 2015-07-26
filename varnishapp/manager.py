@@ -4,3 +4,5 @@ from atexit import register
 
 manager = VarnishManager(getattr(settings, 'VARNISH_MANAGEMENT_ADDRS', ()))
 register(manager.close)
+
+from signals import *
