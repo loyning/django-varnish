@@ -76,7 +76,7 @@ def api_resource_purge_handler (sender, **kwargs):
 
     resource_urls = []
     if hasattr(instance, 'get_resource_url'):
-        resource_urls.extend(instance.get_resource_url())
+        resource_urls.extend([instance.get_resource_url(), ])
 
     if hasattr(instance, 'get_related_resource_urls'):
         resource_urls.extend(instance.get_related_resource_urls())
