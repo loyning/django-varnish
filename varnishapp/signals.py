@@ -9,7 +9,6 @@ logger = logging.getLogger("varnish.invalidation")
 
 
 def purge_old_paths(abs_url):
-
     """
     If Django redirects app is installed, search for new paths based on given absolute url
     and purge all the corresponding old paths to ensure the user gets a redirect to the
@@ -23,10 +22,11 @@ def purge_old_paths(abs_url):
 
         for p in oldpaths:
 
-             try:
-                 resp = manager.run('ban.url', r'^%s$' % str(p.old_path))
-             except:
-                 logger.warn('No varnish instance running. Could not purge %s' % str(p.old_path))
+            try:
+                resp = manager.run('ban.url', r'^%s$' % str(p.old_path))
+            except:
+                logger.warn('No varnish instance running. Could not purge %s' % str(p.old_path))
+
 
 def absolute_url_purge_handler(sender, **kwargs):
     """
@@ -53,10 +53,7 @@ for model in getattr(settings, 'VARNISH_WATCHED_MODELS', ()):
     post_save.connect(absolute_url_purge_handler, sender=get_model(*model.split('.')))
 
 
-
-
-def api_resource_purge_handler (sender, **kwargs):
-
+def api_resource_purge_handler(sender, **kwargs):
     """
     Purges object urls in the API. Requires a get_resource_url on the model that
     returns the url of the api resource object base url. If using tastypie that would
@@ -86,8 +83,8 @@ def api_resource_purge_handler (sender, **kwargs):
             logger.info('Banning API %s' % resource_url)
             resp = manager.run('ban.url', r'^%s' % resource_url)
             logger.info(resp)
-        except:
-            logger.warn('No varnish instance running. Could not purge %s ' % resource_url)
+        except Exception as ex:
+            logger.warn('%s. Could not purge %s ' % (ex.message, resource_url))
 
         purge_old_paths(resource_url)
 
